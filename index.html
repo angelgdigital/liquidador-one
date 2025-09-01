@@ -258,7 +258,7 @@
 
         // Manejador del evento de clic en el botón
         calculateBtn.addEventListener('click', () => {
-            let totalContractsForRange = 0; // Se renombra para mayor claridad
+            let totalContractsForRange = 0;
             const contractsPerPlan = {};
 
             // Primero, obtener el número de contratos por plan.
@@ -308,7 +308,11 @@
 
             // Mostrar el resultado
             if (totalCommission > 0) {
-                resultMessage.textContent = `La comisión total para ${totalContractsForRange + (contractsPerPlan['Empaquetado'] || 0)} contratos es de ${formatCurrency(totalCommission)}.`;
+                if (totalContractsForRange > 0) {
+                     resultMessage.textContent = `La comisión total para ${totalContractsForRange} contratos es de ${formatCurrency(totalCommission)}.`;
+                } else {
+                     resultMessage.textContent = `La comisión total (incluyendo contratos de Empaquetado) es de ${formatCurrency(totalCommission)}.`;
+                }
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
             } else {
