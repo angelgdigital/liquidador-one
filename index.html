@@ -175,12 +175,15 @@
         </div>
 
         <!-- Botones de Acción -->
-        <div class="flex justify-center mb-4">
+        <div class="flex justify-center flex-wrap gap-4 mb-4">
             <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
                 Calcular Comisión
             </button>
-            <button id="generatePdfBtn" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 ml-4">
+            <button id="generatePdfBtn" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
                 Generar PDF
+            </button>
+            <button id="resetBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
+                Nueva Liquidación
             </button>
         </div>
 
@@ -209,7 +212,7 @@
                     </tfoot>
                 </table>
             </div>
-            <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado para ONE Telecomunicaciones por A2G</p>
+            <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado por Angel Gutierrez</p>
         </div>
     </div>
 
@@ -264,6 +267,7 @@
         const planInputsContainer = document.getElementById('planInputs');
         const calculateBtn = document.getElementById('calculateBtn');
         const generatePdfBtn = document.getElementById('generatePdfBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const resultMessage = document.getElementById('resultMessage');
         const detailedReport = document.getElementById('detailedReport');
         const reportTableBody = document.getElementById('reportTableBody');
@@ -289,7 +293,7 @@
                 minimumFractionDigits: 0
             }).format(amount);
         }
-
+        
         // Manejador del evento de clic en el botón de cálculo
         calculateBtn.addEventListener('click', () => {
             let totalContractsForRange = 0;
@@ -392,9 +396,10 @@
             const { jsPDF } = window.jspdf;
             const reportElement = document.getElementById('resultContainer');
             
-            // Ocultar el botón de PDF temporalmente para que no aparezca en el documento
+            // Ocultar los botones temporalmente para que no aparezcan en el documento
             generatePdfBtn.classList.add('hidden');
-            
+            resetBtn.classList.add('hidden');
+
             html2canvas(reportElement, { scale: 2 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -416,9 +421,31 @@
 
                 pdf.save('reporte-comisiones.pdf');
                 
-                // Volver a mostrar el botón de PDF después de la descarga
+                // Volver a mostrar los botones después de la descarga
                 generatePdfBtn.classList.remove('hidden');
+                resetBtn.classList.remove('hidden');
             });
+        });
+
+        // Manejador del evento de clic en el botón de nueva liquidación
+        resetBtn.addEventListener('click', () => {
+            // Restablecer todos los campos a 0
+            planTypes.forEach(plan => {
+                const inputId = plan.replace(/\s|\+/g, '');
+                document.getElementById(inputId).value = 0;
+            });
+            
+            // Ocultar el reporte detallado y el botón de PDF
+            detailedReport.classList.add('hidden');
+            generatePdfBtn.classList.add('hidden');
+            
+            // Restablecer el mensaje de resultado
+            resultMessage.textContent = 'La comisión total aparecerá aquí.';
+            resultMessage.classList.remove('text-green-600', 'text-red-600');
+            resultMessage.classList.add('text-gray-700');
+
+            // Ocultar el crédito
+            creatorCredit.classList.add('hidden');
         });
     </script>
 </body>
