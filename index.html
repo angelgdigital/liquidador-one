@@ -258,39 +258,45 @@
 
         // Manejador del evento de clic en el botón
         calculateBtn.addEventListener('click', () => {
-            let totalContracts = 0;
+            let totalContractsForRange = 0; // Se renombra para mayor claridad
             const contractsPerPlan = {};
 
-            // Obtener el número de contratos de cada campo y calcular el total
+            // Primero, obtener el número de contratos por plan.
             planTypes.forEach(plan => {
                 const inputId = plan.replace(/\s|\+/g, '');
                 const value = parseInt(document.getElementById(inputId).value, 10) || 0;
                 contractsPerPlan[plan] = value;
-                totalContracts += value;
             });
 
-            // Determinar el rango de ventas
+            // Segundo, calcular el total de contratos para determinar el rango, excluyendo 'Empaquetado'.
+            planTypes.forEach(plan => {
+                if (plan !== 'Empaquetado') {
+                    totalContractsForRange += contractsPerPlan[plan];
+                }
+            });
+
+            // Determinar el rango de ventas basado en el nuevo total
             let salesRange = '';
-            if (totalContracts === 0) {
-                resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
-                resultMessage.classList.remove('text-green-600', 'text-red-600');
-                resultMessage.classList.add('text-gray-700');
-                return;
-            } else if (totalContracts <= 20) {
+            if (totalContractsForRange === 0 && (contractsPerPlan['Empaquetado'] || 0) === 0) {
+                 resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
+                 resultMessage.classList.remove('text-green-600', 'text-red-600');
+                 resultMessage.classList.add('text-gray-700');
+                 return;
+            } else if (totalContractsForRange <= 20) {
                 salesRange = '<=20';
-            } else if (totalContracts >= 21 && totalContracts <= 40) {
+            } else if (totalContractsForRange >= 21 && totalContractsForRange <= 40) {
                 salesRange = '21-40';
-            } else if (totalContracts >= 41 && totalContracts <= 60) {
+            } else if (totalContractsForRange >= 41 && totalContractsForRange <= 60) {
                 salesRange = '41-60';
-            } else if (totalContracts >= 61 && totalContracts <= 80) {
+            } else if (totalContractsForRange >= 61 && totalContractsForRange <= 80) {
                 salesRange = '61-80';
-            } else if (totalContracts >= 81 && totalContracts <= 100) {
+            } else if (totalContractsForRange >= 81 && totalContractsForRange <= 100) {
                 salesRange = '81-100';
             } else {
                 salesRange = '>101';
             }
 
-            // Calcular la comisión total
+            // Calcular la comisión total, incluyendo todos los planes.
             let totalCommission = 0;
             for (const plan in contractsPerPlan) {
                 const numContracts = contractsPerPlan[plan];
@@ -302,7 +308,7 @@
 
             // Mostrar el resultado
             if (totalCommission > 0) {
-                resultMessage.textContent = `La comisión total para ${totalContracts} contratos es de ${formatCurrency(totalCommission)}.`;
+                resultMessage.textContent = `La comisión total para ${totalContractsForRange + (contractsPerPlan['Empaquetado'] || 0)} contratos es de ${formatCurrency(totalCommission)}.`;
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
             } else {
