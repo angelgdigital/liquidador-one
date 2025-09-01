@@ -6,6 +6,9 @@
     <title>Liquidador de Comisiones ONE Telecomunicaciones</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF y html2canvas CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
@@ -26,9 +29,6 @@
             white-space: nowrap;
         }
     </style>
-    <!-- Librerías para generar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
@@ -174,43 +174,42 @@
             <!-- Los campos de entrada se generarán dinámicamente aquí -->
         </div>
 
-        <!-- Botón de Cálculo -->
-        <div class="flex justify-center mb-8">
+        <!-- Botones de Acción -->
+        <div class="flex justify-center mb-4">
             <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
                 Calcular Comisión
             </button>
-        </div>
-
-        <!-- Resultado -->
-        <div id="pdf-content">
-            <div id="resultContainer" class="mt-8 text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-                <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
-                <div id="detailedReport" class="hidden mt-4">
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">Detalle de la Comisión</h3>
-                    <table id="reportTable" class="w-full text-sm text-left text-gray-500 rounded-lg overflow-hidden">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                            <tr>
-                                <th class="px-4 py-2">Plan</th>
-                                <th class="px-4 py-2 text-center">Contratos</th>
-                                <th class="px-4 py-2 text-center">Valor Unitario</th>
-                                <th class="px-4 py-2 text-center">Valor Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Detalle de la comisión por plan se insertará aquí -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="loading" class="hidden mt-2">
-                    <span class="text-sm text-gray-500">Generando PDF...</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-center mt-4">
-            <button id="generatePdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 hidden">
+            <button id="generatePdfBtn" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 ml-4">
                 Generar PDF
             </button>
+        </div>
+
+        <!-- Sección de Resultado y Contenido para PDF -->
+        <div id="resultContainer" class="text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+            <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
+            <div id="detailedReport" class="hidden mt-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Detalle de la Comisión</h3>
+                <table id="reportTable" class="w-full text-sm text-left text-gray-500 rounded-lg overflow-hidden">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-2">Plan</th>
+                            <th class="px-4 py-2 text-center">Contratos</th>
+                            <th class="px-4 py-2 text-center">Valor Unitario</th>
+                            <th class="px-4 py-2 text-center">Valor Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <!-- Detalle de la comisión por plan se insertará aquí -->
+                    </tbody>
+                    <tfoot id="reportTableFooter" class="bg-gray-200 font-bold text-gray-800">
+                        <tr>
+                            <td colspan="3" class="text-right pr-4 py-2">TOTAL DE COMISIÓN</td>
+                            <td id="totalValueCell" class="px-4 py-2 text-center"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado para ONE Telecomunicaciones por A2G</p>
         </div>
     </div>
 
@@ -267,9 +266,9 @@
         const generatePdfBtn = document.getElementById('generatePdfBtn');
         const resultMessage = document.getElementById('resultMessage');
         const detailedReport = document.getElementById('detailedReport');
-        const reportTableBody = document.querySelector('#reportTable tbody');
-        const loading = document.getElementById('loading');
-        const pdfContent = document.getElementById('pdf-content');
+        const reportTableBody = document.getElementById('reportTableBody');
+        const totalValueCell = document.getElementById('totalValueCell');
+        const creatorCredit = document.getElementById('creatorCredit');
 
         // Generar dinámicamente los campos de entrada
         planTypes.forEach(plan => {
@@ -295,8 +294,8 @@
         calculateBtn.addEventListener('click', () => {
             let totalContractsForRange = 0;
             const contractsPerPlan = {};
-            const detailedResults = [];
-
+            const detailedReportData = [];
+            
             // Obtener el número de contratos por plan.
             planTypes.forEach(plan => {
                 const inputId = plan.replace(/\s|\+/g, '');
@@ -317,8 +316,9 @@
                  resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
                  resultMessage.classList.remove('text-green-600', 'text-red-600');
                  resultMessage.classList.add('text-gray-700');
-                 generatePdfBtn.classList.add('hidden');
                  detailedReport.classList.add('hidden');
+                 creatorCredit.classList.add('hidden');
+                 generatePdfBtn.classList.add('hidden');
                  return;
             } else if (totalContractsForRange <= 20) {
                 salesRange = '<=20';
@@ -345,6 +345,14 @@
                     const totalValue = numContracts * commissionPerContract;
                     totalCommission += totalValue;
 
+                    // Agregar datos para el reporte detallado
+                    detailedReportData.push({
+                        plan: plan,
+                        contracts: numContracts,
+                        unitValue: commissionPerContract,
+                        totalValue: totalValue
+                    });
+
                     // Agregar fila a la tabla de detalle
                     const row = document.createElement('tr');
                     row.className = 'bg-white border-b hover:bg-gray-100';
@@ -358,38 +366,40 @@
                 }
             }
             
+            // Actualizar la celda del total
+            totalValueCell.textContent = formatCurrency(totalCommission);
+
             // Mostrar el resultado y el detalle
             if (totalCommission > 0) {
-                const totalContracts = totalContractsForRange + (contractsPerPlan['Empaquetado'] || 0);
-                resultMessage.textContent = `La comisión total para ${totalContracts} contratos es de ${formatCurrency(totalCommission)}.`;
+                resultMessage.textContent = `La comisión total para ${totalContractsForRange} contratos es de ${formatCurrency(totalCommission)}.`;
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
-                generatePdfBtn.classList.remove('hidden');
                 detailedReport.classList.remove('hidden');
+                creatorCredit.classList.remove('hidden');
+                generatePdfBtn.classList.remove('hidden');
             } else {
                 resultMessage.textContent = 'No se encontró una comisión para la combinación seleccionada.';
                 resultMessage.classList.remove('text-green-600', 'text-gray-700');
                 resultMessage.classList.add('text-red-600');
-                generatePdfBtn.classList.add('hidden');
                 detailedReport.classList.add('hidden');
+                creatorCredit.classList.add('hidden');
+                generatePdfBtn.classList.add('hidden');
             }
         });
 
-        // Manejador del evento de clic para generar PDF
+        // Manejador del evento de clic en el botón de generar PDF
         generatePdfBtn.addEventListener('click', () => {
             const { jsPDF } = window.jspdf;
+            const reportElement = document.getElementById('resultContainer');
             
-            // Ocultar el botón para que no aparezca en el PDF
+            // Ocultar el botón de PDF temporalmente para que no aparezca en el documento
             generatePdfBtn.classList.add('hidden');
-            loading.classList.remove('hidden');
-
-            const content = pdfContent;
-
-            html2canvas(content, { scale: 2 }).then(canvas => {
+            
+            html2canvas(reportElement, { scale: 2 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210; 
-                const pageHeight = 295;
+                const imgWidth = 210; // Ancho A4 en mm
+                const pageHeight = 297; // Alto A4 en mm
                 const imgHeight = canvas.height * imgWidth / canvas.width;
                 let heightLeft = imgHeight;
                 let position = 0;
@@ -403,19 +413,11 @@
                     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                 }
+
+                pdf.save('reporte-comisiones.pdf');
                 
-                pdf.save('reporte_comision_ONE.pdf');
-                
-                // Mostrar el botón de nuevo y ocultar el mensaje de carga
+                // Volver a mostrar el botón de PDF después de la descarga
                 generatePdfBtn.classList.remove('hidden');
-                loading.classList.add('hidden');
-            }).catch(error => {
-                console.error("Error al generar el PDF:", error);
-                generatePdfBtn.classList.remove('hidden');
-                loading.classList.add('hidden');
-                resultMessage.textContent = 'Ocurrió un error al generar el PDF. Por favor, inténtalo de nuevo.';
-                resultMessage.classList.remove('text-green-600', 'text-gray-700');
-                resultMessage.classList.add('text-red-600');
             });
         });
     </script>
