@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidador de Comisiones</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
+        <!-- Título -->
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Liquidador de Comisiones</h1>
+        <p class="text-center text-gray-500 mb-8">Ingresa la cantidad de contratos por plan para calcular tu comisión total.</p>
+
+        <!-- Contenedor de Entradas de Planes -->
+        <div id="planInputs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Los campos de entrada se generarán dinámicamente aquí -->
+        </div>
+
+        <!-- Botón de Cálculo -->
+        <div class="flex justify-center mb-8">
+            <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
+                Calcular Comisión
+            </button>
+        </div>
+
+        <!-- Resultado -->
+        <div id="resultContainer" class="mt-8 text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+            <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mapeo de la tabla de comisiones proporcionada
+        const comisiones = {
+            '<=20': {
+                '200MB': 15000, '200MB+TV': 21500, '300MB': 26500, '300MB+TV': 31500,
+                '400MB': 36500, '400MB+TV': 41500, '500MB': 46500, '500MB+TV': 51500,
+                '700MB': 56500, '700MB+TV': 61500, '900MB': 66500, '900MB+TV': 71500
+            },
+            '21-40': {
+                '200MB': 27500, '200MB+TV': 36500, '300MB': 41500, '300MB+TV': 46500,
+                '400MB': 51500, '400MB+TV': 56500, '500MB': 61500, '500MB+TV': 66500,
+                '700MB': 71500, '700MB+TV': 76500, '900MB': 81500, '900MB+TV': 86500
+            },
+            '41-60': {
+                '200MB': 28500, '200MB+TV': 37500, '300MB': 42500, '300MB+TV': 47500,
+                '400MB': 52500, '400MB+TV': 57500, '500MB': 62500, '500MB+TV': 67500,
+                '700MB': 72500, '700MB+TV': 77500, '900MB': 82500, '900MB+TV': 87500
+            },
+            '61-80': {
+                '200MB': 29500, '200MB+TV': 38500, '300MB': 43500, '300MB+TV': 48500,
+                '400MB': 53500, '400MB+TV': 58500, '500MB': 63500, '500MB+TV': 68500,
+                '700MB': 73500, '700MB+TV': 78500, '900MB': 83500, '900MB+TV': 88500
+            },
+            '81-100': {
+                '200MB': 30500, '200MB+TV': 39500, '300MB': 44500, '300MB+TV': 49500,
+                '400MB': 54500, '400MB+TV': 59500, '500MB': 64500, '500MB+TV': 69500,
+                '700MB': 74500, '700MB+TV': 79500, '900MB': 84500, '900MB+TV': 89500
+            },
+            '>101': {
+                '200MB': 31500, '200MB+TV': 40500, '300MB': 45500, '300MB+TV': 50500,
+                '400MB': 55500, '400MB+TV': 60500, '500MB': 65500, '500MB+TV': 70500,
+                '700MB': 75500, '700MB+TV': 80500, '900MB': 85500, '900MB+TV': 90500
+            }
+        };
+
+        const planTypes = [
+            '200MB', '200MB+TV', '300MB', '300MB+TV',
+            '400MB', '400MB+TV', '500MB', '500MB+TV',
+            '700MB', '700MB+TV', '900MB', '900MB+TV'
+        ];
+
+        const planInputsContainer = document.getElementById('planInputs');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultMessage = document.getElementById('resultMessage');
+
+        // Generar dinámicamente los campos de entrada
+        planTypes.forEach(plan => {
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'flex flex-col';
+            inputGroup.innerHTML = `
+                <label for="${plan.replace(/\s|\+/g, '')}" class="block text-gray-700 font-medium mb-2">${plan}</label>
+                <input id="${plan.replace(/\s|\+/g, '')}" type="number" min="0" value="0" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-center" />
+            `;
+            planInputsContainer.appendChild(inputGroup);
+        });
+
+        // Función para formatear el número como moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Manejador del evento de clic en el botón
+        calculateBtn.addEventListener('click', () => {
+            let totalContracts = 0;
+            const contractsPerPlan = {};
+
+            // Obtener el número de contratos de cada campo y calcular el total
+            planTypes.forEach(plan => {
+                const inputId = plan.replace(/\s|\+/g, '');
+                const value = parseInt(document.getElementById(inputId).value, 10) || 0;
+                contractsPerPlan[plan] = value;
+                totalContracts += value;
+            });
+
+            // Determinar el rango de ventas
+            let salesRange = '';
+            if (totalContracts === 0) {
+                resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
+                resultMessage.classList.remove('text-green-600', 'text-red-600');
+                resultMessage.classList.add('text-gray-700');
+                return;
+            } else if (totalContracts <= 20) {
+                salesRange = '<=20';
+            } else if (totalContracts >= 21 && totalContracts <= 40) {
+                salesRange = '21-40';
+            } else if (totalContracts >= 41 && totalContracts <= 60) {
+                salesRange = '41-60';
+            } else if (totalContracts >= 61 && totalContracts <= 80) {
+                salesRange = '61-80';
+            } else if (totalContracts >= 81 && totalContracts <= 100) {
+                salesRange = '81-100';
+            } else {
+                salesRange = '>101';
+            }
+
+            // Calcular la comisión total
+            let totalCommission = 0;
+            for (const plan in contractsPerPlan) {
+                const numContracts = contractsPerPlan[plan];
+                if (numContracts > 0) {
+                    const commissionPerContract = comisiones[salesRange][plan];
+                    totalCommission += numContracts * commissionPerContract;
+                }
+            }
+
+            // Mostrar el resultado
+            if (totalCommission > 0) {
+                resultMessage.textContent = `La comisión total para ${totalContracts} contratos es de ${formatCurrency(totalCommission)}.`;
+                resultMessage.classList.remove('text-gray-700', 'text-red-600');
+                resultMessage.classList.add('text-green-600');
+            } else {
+                resultMessage.textContent = 'No se encontró una comisión para la combinación seleccionada.';
+                resultMessage.classList.remove('text-green-600', 'text-gray-700');
+                resultMessage.classList.add('text-red-600');
+            }
+        });
+    </script>
+</body>
+</html>
