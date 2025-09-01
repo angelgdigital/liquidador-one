@@ -191,6 +191,7 @@
         <div id="resultContainer" class="text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
             <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
             <div id="detailedReport" class="hidden mt-4">
+                <p id="salesLevelMessage" class="text-md font-bold text-gray-700 mb-2"></p>
                 <h3 class="text-lg font-bold text-gray-800 mb-2">Detalle de la Comisión</h3>
                 <table id="reportTable" class="w-full text-sm text-left text-gray-500 rounded-lg overflow-hidden">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100">
@@ -212,7 +213,7 @@
                     </tfoot>
                 </table>
             </div>
-            <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado para ONE Telecomunicaciones por @AngelGutierrezDigital</p>
+            <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado para ONE Telecomunicaciones por @angelgutierrezdigital</p>
         </div>
     </div>
 
@@ -270,6 +271,7 @@
         const resetBtn = document.getElementById('resetBtn');
         const resultMessage = document.getElementById('resultMessage');
         const detailedReport = document.getElementById('detailedReport');
+        const salesLevelMessage = document.getElementById('salesLevelMessage');
         const reportTableBody = document.getElementById('reportTableBody');
         const totalValueCell = document.getElementById('totalValueCell');
         const creatorCredit = document.getElementById('creatorCredit');
@@ -376,6 +378,7 @@
             // Mostrar el resultado y el detalle
             if (totalCommission > 0) {
                 resultMessage.textContent = `La comisión total para ${totalContractsForRange} contratos es de ${formatCurrency(totalCommission)}.`;
+                salesLevelMessage.textContent = `Tu nivel de ventas es: ${salesRange}`;
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
                 detailedReport.classList.remove('hidden');
@@ -439,10 +442,11 @@
             detailedReport.classList.add('hidden');
             generatePdfBtn.classList.add('hidden');
             
-            // Restablecer el mensaje de resultado
+            // Restablecer los mensajes de resultado
             resultMessage.textContent = 'La comisión total aparecerá aquí.';
             resultMessage.classList.remove('text-green-600', 'text-red-600');
             resultMessage.classList.add('text-gray-700');
+            salesLevelMessage.textContent = '';
 
             // Ocultar el crédito
             creatorCredit.classList.add('hidden');
