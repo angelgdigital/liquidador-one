@@ -26,6 +26,9 @@
             white-space: nowrap;
         }
     </style>
+    <!-- Librerías para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
@@ -179,8 +182,19 @@
         </div>
 
         <!-- Resultado -->
-        <div id="resultContainer" class="mt-8 text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-            <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
+        <div id="pdf-content">
+            <div id="resultContainer" class="mt-8 text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
+                <div id="loading" class="hidden mt-2">
+                    <span class="text-sm text-gray-500">Generando PDF...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center mt-4">
+            <button id="generatePdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 hidden">
+                Generar PDF
+            </button>
         </div>
     </div>
 
@@ -234,7 +248,10 @@
 
         const planInputsContainer = document.getElementById('planInputs');
         const calculateBtn = document.getElementById('calculateBtn');
+        const generatePdfBtn = document.getElementById('generatePdfBtn');
         const resultMessage = document.getElementById('resultMessage');
+        const loading = document.getElementById('loading');
+        const pdfContent = document.getElementById('pdf-content');
 
         // Generar dinámicamente los campos de entrada
         planTypes.forEach(plan => {
@@ -256,9 +273,10 @@
             }).format(amount);
         }
 
-        // Manejador del evento de clic en el botón
+        // Manejador del evento de clic en el botón de cálculo
         calculateBtn.addEventListener('click', () => {
             let totalContractsForRange = 0;
+            let totalContracts = 0;
             const contractsPerPlan = {};
 
             // Primero, obtener el número de contratos por plan.
@@ -266,6 +284,7 @@
                 const inputId = plan.replace(/\s|\+/g, '');
                 const value = parseInt(document.getElementById(inputId).value, 10) || 0;
                 contractsPerPlan[plan] = value;
+                totalContracts += value;
             });
 
             // Segundo, calcular el total de contratos para determinar el rango, excluyendo 'Empaquetado'.
@@ -281,6 +300,7 @@
                  resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
                  resultMessage.classList.remove('text-green-600', 'text-red-600');
                  resultMessage.classList.add('text-gray-700');
+                 generatePdfBtn.classList.add('hidden');
                  return;
             } else if (totalContractsForRange <= 20) {
                 salesRange = '<=20';
@@ -305,7 +325,7 @@
                     totalCommission += numContracts * commissionPerContract;
                 }
             }
-
+            
             // Mostrar el resultado
             if (totalCommission > 0) {
                 if (totalContractsForRange > 0) {
@@ -315,11 +335,57 @@
                 }
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
+                generatePdfBtn.classList.remove('hidden');
             } else {
                 resultMessage.textContent = 'No se encontró una comisión para la combinación seleccionada.';
                 resultMessage.classList.remove('text-green-600', 'text-gray-700');
                 resultMessage.classList.add('text-red-600');
+                generatePdfBtn.classList.add('hidden');
             }
+        });
+
+        // Manejador del evento de clic para generar PDF
+        generatePdfBtn.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            
+            // Ocultar el botón para que no aparezca en el PDF
+            generatePdfBtn.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const content = pdfContent;
+
+            html2canvas(content, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; 
+                const pageHeight = 295;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                pdf.save('reporte_comision_ONE.pdf');
+                
+                // Mostrar el botón de nuevo y ocultar el mensaje de carga
+                generatePdfBtn.classList.remove('hidden');
+                loading.classList.add('hidden');
+            }).catch(error => {
+                console.error("Error al generar el PDF:", error);
+                generatePdfBtn.classList.remove('hidden');
+                loading.classList.add('hidden');
+                resultMessage.textContent = 'Ocurrió un error al generar el PDF. Por favor, inténtalo de nuevo.';
+                resultMessage.classList.remove('text-green-600', 'text-gray-700');
+                resultMessage.classList.add('text-red-600');
+            });
         });
     </script>
 </body>
