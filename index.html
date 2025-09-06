@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquidador de Comisiones ONE Telecomunicaciones</title>
-    <!-- Favicon -->
+    <title>Liquidador de Comisiones ONE Telecomunicaciones - Login</title>
     <link rel="icon" type="image/png" href="https://onetelecomunicaciones.com/wp-content/uploads/2022/03/logo_one_telecomunicaciones-01-18500.png">
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- jsPDF y html2canvas CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -27,20 +24,47 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
-        <!-- Título y logo -->
+    <div id="loginContainer" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+        <div class="flex flex-col items-center mb-6">
+            <img src="https://onetelecomunicaciones.com/wp-content/uploads/2022/03/logo_one_telecomunicaciones-01-18500.png" alt="Logo de ONE Telecomunicaciones" class="h-16 mb-4">
+            <h2 class="text-2xl font-bold text-center text-gray-800">Acceso Asesores</h2>
+            <p class="text-center text-gray-500 text-sm mt-1">Ingresa tus credenciales para continuar</p>
+        </div>
+        <form id="loginForm">
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 font-medium mb-2">Usuario</label>
+                <input type="text" id="username" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 font-medium mb-2">Contraseña</label>
+                <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" required>
+            </div>
+            <p id="loginError" class="text-red-500 text-center text-sm mb-4 hidden"></p>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
+                Entrar
+            </button>
+        </form>
+        <footer class="mt-8 md:mt-0 text-center text-gray-500 text-sm">
+            <p> - </p>
+            <p>
+                &copy; 2025 ONE Telecomunicaciones.
+            </p>
+            <p class="mt-1">
+               By <a href="https://www.instagram.com/angelgutierrezdigital/" target="_blank" class="text-blue-500 hover:underline">Angel Gutierrez Digital</a>.
+            </p>
+        </footer>
+    </div>
+
+    <div id="appContainer" class="hidden bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
         <div class="flex flex-col items-center mb-6">
             <img src="https://onetelecomunicaciones.com/wp-content/uploads/2022/03/logo_one_telecomunicaciones-01-18500.png" alt="Logo de ONE Telecomunicaciones" class="h-16 mb-2">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Liquidador de Comisiones ONE Telecomunicaciones</h1>
             <p class="text-center text-gray-500">Ingresa la cantidad de contratos por plan para calcular tu comisión total.</p>
         </div>
         
-        <!-- Contenedor de Entradas de Planes -->
         <div id="planInputs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Los campos de entrada se generarán dinámicamente aquí -->
-        </div>
+            </div>
 
-        <!-- Botones de Acción -->
         <div class="flex justify-center flex-wrap gap-4 mb-4">
             <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95">
                 Calcular Comisión
@@ -53,7 +77,6 @@
             </button>
         </div>
 
-        <!-- Sección de Resultado y Contenido para PDF -->
         <div id="resultContainer" class="text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
             <p id="resultMessage" class="text-xl font-semibold text-gray-700">La comisión total aparecerá aquí.</p>
             <div id="detailedReport" class="hidden mt-4">
@@ -69,8 +92,7 @@
                         </tr>
                     </thead>
                     <tbody id="reportTableBody">
-                        <!-- Detalle de la comisión por plan se insertará aquí -->
-                    </tbody>
+                        </tbody>
                     <tfoot id="reportTableFooter" class="bg-gray-200 font-bold text-gray-800">
                         <tr>
                             <td colspan="3" class="text-right pr-4 py-2">TOTAL DE COMISIÓN</td>
@@ -81,56 +103,183 @@
             </div>
             <p id="creatorCredit" class="text-center text-gray-400 mt-4 text-sm hidden">Creado para ONE Telecomunicaciones by @angelgutierrezdigital</p>
         </div>
+        
+         <footer class="mt-8 text-center text-gray-500 text-sm">
+        <p></p>
+        <p>
+            &copy; 2025 ONE Telecomunicaciones. 
+        </p>
+        <p class="mt-1">
+            By <a href="https://www.instagram.com/angelgutierrezdigital/" target="_blank" class="text-blue-500 hover:underline">Angel Gutierrez Digital</a>.
+        </p>
+    </footer>
     </div>
 
     <script>
         // Mapeo de la tabla de comisiones proporcionada
-        const comisiones = {
-            '<=20': {
-                'Empaquetado': 15000, 'TV': 12500,
-                '200MB': 21500, '200MB+TV': 26500, '300MB': 26500, '300MB+TV': 31500,
-                '400MB': 36500, '400MB+TV': 41500, '500MB': 46500, '500MB+TV': 51500,
-                '700MB': 56500, '700MB+TV': 61500, '900MB': 66500, '900MB+TV': 71500
-            },
-            '21-40': {
-                'Empaquetado': 15000, 'TV': 27500,
-                '200MB': 36500, '200MB+TV': 41500, '300MB': 41500, '300MB+TV': 46500,
-                '400MB': 51500, '400MB+TV': 56500, '500MB': 61500, '500MB+TV': 66500,
-                '700MB': 71500, '700MB+TV': 76500, '900MB': 81500, '900MB+TV': 86500
-            },
-            '41-60': {
-                'Empaquetado': 15000, 'TV': 28500,
-                '200MB': 37500, '200MB+TV': 42500, '300MB': 42500, '300MB+TV': 47500,
-                '400MB': 52500, '400MB+TV': 57500, '500MB': 62500, '500MB+TV': 67500,
-                '700MB': 72500, '700MB+TV': 77500, '900MB': 82500, '900MB+TV': 87500
-            },
-            '61-80': {
-                'Empaquetado': 15000, 'TV': 29500,
-                '200MB': 38500, '200MB+TV': 43500, '300MB': 43500, '300MB+TV': 48500,
-                '400MB': 53500, '400MB+TV': 58500, '500MB': 63500, '500MB+TV': 68500,
-                '700MB': 73500, '700MB+TV': 78500, '900MB': 83500, '900MB+TV': 88500
-            },
-            '81-100': {
-                'Empaquetado': 15000, 'TV': 30500,
-                '200MB': 39500, '200MB+TV': 44500, '300MB': 44500, '300MB+TV': 49500,
-                '400MB': 54500, '400MB+TV': 59500, '500MB': 64500, '500MB+TV': 69500,
-                '700MB': 74500, '700MB+TV': 79500, '900MB': 84500, '900MB+TV': 89500
-            },
-            '>101': {
-                'Empaquetado': 15000, 'TV': 31500,
-                '200MB': 40500, '200MB+TV': 45500, '300MB': 45500, '300MB+TV': 50500,
-                '400MB': 55500, '400MB+TV': 60500, '500MB': 65500, '500MB+TV': 70500,
-                '700MB': 75500, '700MB+TV': 80500, '900MB': 85500, '900MB+TV': 90500
-            }
+        // Mapeo de la tabla de comisiones proporcionada
+const comisiones = {
+    // ... (Tu objeto comisiones se mantiene igual) ...
+    '<=20': {
+        'Empaquetado': 15000, 
+        'TV': 12500,
+        '200MB': 21500, 
+        '200MB+TV': 26500, 
+        '300MB': 26500, 
+        '300MB+TV': 31500,
+        '400MB': 36500, 
+        '400MB+TV': 41500, 
+        '500MB': 46500, 
+        '500MB+TV': 51500,
+        '700MB': 56500, 
+        '700MB+TV': 61500, 
+        '900MB': 66500, 
+        '900MB+TV': 71500
+    },
+    '21-40': {
+        'Empaquetado': 15000, 
+        'TV': 27500,
+        '200MB': 36500, 
+        '200MB+TV': 41500, 
+        '300MB': 41500, 
+        '300MB+TV': 46500,
+        '400MB': 51500, 
+        '400MB+TV': 56500, 
+        '500MB': 61500, 
+        '500MB+TV': 66500,
+        '700MB': 71500, 
+        '700MB+TV': 76500, 
+        '900MB': 81500, 
+        '900MB+TV': 86500
+    },
+    '41-60': {
+        'Empaquetado': 15000, 
+        'TV': 28500,
+        '200MB': 37500, 
+        '200MB+TV': 42500, 
+        '300MB': 42500, 
+        '300MB+TV': 47500,
+        '400MB': 52500, 
+        '400MB+TV': 57500, 
+        '500MB': 62500, 
+        '500MB+TV': 67500,
+        '700MB': 72500, 
+        '700MB+TV': 77500, 
+        '900MB': 82500, 
+        '900MB+TV': 87500
+    },
+    '61-80': {
+        'Empaquetado': 15000, 
+        'TV': 29500,
+        '200MB': 38500, 
+        '200MB+TV': 43500, 
+        '300MB': 43500, 
+        '300MB+TV': 48500,
+        '400MB': 53500, 
+        '400MB+TV': 58500, 
+        '500MB': 63500, 
+        '500MB+TV': 68500,
+        '700MB': 73500, 
+        '700MB+TV': 78500, 
+        '900MB': 83500, 
+        '900MB+TV': 88500
+    },
+    '81-100': {
+        'Empaquetado': 15000, 
+        'TV': 30500,
+        '200MB': 39500, 
+        '200MB+TV': 44500, 
+        '300MB': 44500, 
+        '300MB+TV': 49500,
+        '400MB': 54500, 
+        '400MB+TV': 59500, 
+        '500MB': 64500, 
+        '500MB+TV': 69500,
+        '700MB': 74500, 
+        '700MB+TV': 79500, 
+        '900MB': 84500, 
+        '900MB+TV': 89500
+    },
+    '>101': {
+        'Empaquetado': 15000, 
+        'TV': 31500,
+        '200MB': 40500, 
+        '200MB+TV': 45500, 
+        '300MB': 45500, 
+        '300MB+TV': 50500,
+        '400MB': 55500, 
+        '400MB+TV': 60500, 
+        '500MB': 65500, 
+        '500MB+TV': 70500,
+        '700MB': 75500, 
+        '700MB+TV': 80500, 
+        '900MB': 85500, 
+        '900MB+TV': 90500
+    }
+};
+
+// Nuevos nombres de los planes
+const planNames = {
+    'Empaquetado': 'Empaquetado',
+    'TV': 'TV',
+    'HOGAR 200mb': '200MB',
+    'PLAN HOGAR 200mb+tv': '200MB+TV',
+    'FAMILIAR 300mb': '300MB',
+    'PLAN FAMILIAR 300mb+tv': '300MB+TV',
+    'AVANZADO 400mb': '400MB',
+    'PLAN AVANZADO 400mb+tv': '400MB+TV',
+    'ÉLITE 500mb': '500MB',
+    'PLAN ÉLITE 500mb+tv': '500MB+TV',
+    'ULTRA 700mb': '700MB',
+    'PLAN ULTRA 700mb+tv': '700MB+TV',
+    'PREMIUM 900mb': '900MB',
+    'PLAN PREMIUM 900mb+tv': '900MB+TV',
+};
+
+        const planTypes = Object.keys(planNames);
+
+        // --- Lógica del Login ---
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+        const loginContainer = document.getElementById('loginContainer');
+        const appContainer = document.getElementById('appContainer');
+
+        const users = {
+            // Asesores (10)
+            'lpulido': 'contrasena1',
+            'srodriguez': 'contrasena2',
+            'lrodriguez': 'contrasena3',
+            'asesor4': 'contrasena4',
+            'asesor5': 'contrasena5',
+            'asesor6': 'contrasena6',
+            'asesor7': 'contrasena7',
+            'asesor8': 'contrasena8',
+            'asesor9': 'contrasena9',
+            'asesor10': 'contrasena10',
+            // Comerciales (2)
+            'ipiza': 'contrasena11',
+            'plopez': 'contrasena12',
+            'admin': 'one123'
         };
 
-        const planTypes = [
-            'Empaquetado', 'TV',
-            '200MB', '200MB+TV', '300MB', '300MB+TV',
-            '400MB', '400MB+TV', '500MB', '500MB+TV',
-            '700MB', '700MB+TV', '900MB', '900MB+TV'
-        ];
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
 
+            if (users[username] === password) {
+                loginContainer.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                initCalculator();
+            } else {
+                loginError.textContent = 'Usuario o contraseña incorrectos. Contactese al 3014558556';
+                loginError.classList.remove('hidden');
+            }
+        });
+        
+        // --- Lógica de la Calculadora (se mantiene la lógica original) ---
         const planInputsContainer = document.getElementById('planInputs');
         const calculateBtn = document.getElementById('calculateBtn');
         const generatePdfBtn = document.getElementById('generatePdfBtn');
@@ -142,17 +291,19 @@
         const totalValueCell = document.getElementById('totalValueCell');
         const creatorCredit = document.getElementById('creatorCredit');
 
-        // Generar dinámicamente los campos de entrada
-        planTypes.forEach(plan => {
-            const inputGroup = document.createElement('div');
-            inputGroup.className = 'flex flex-col';
-            inputGroup.innerHTML = `
-                <label for="${plan.replace(/\s|\+/g, '')}" class="block text-gray-700 font-medium mb-2">${plan}</label>
-                <input id="${plan.replace(/\s|\+/g, '')}" type="number" min="0" value="0" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-center" />
-            `;
-            planInputsContainer.appendChild(inputGroup);
-        });
-
+        function initCalculator() {
+            // Generar dinámicamente los campos de entrada
+            planTypes.forEach(plan => {
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'flex flex-col';
+                inputGroup.innerHTML = `
+                    <label for="${planNames[plan].replace(/\s|\+/g, '')}" class="block text-gray-700 font-medium mb-2">${plan}</label>
+                    <input id="${planNames[plan].replace(/\s|\+/g, '')}" type="number" min="0" value="0" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-center" />
+                `;
+                planInputsContainer.appendChild(inputGroup);
+            });
+        }
+        
         // Función para formatear el número como moneda
         function formatCurrency(amount) {
             return new Intl.NumberFormat('es-CO', {
@@ -164,34 +315,35 @@
         
         // Manejador del evento de clic en el botón de cálculo
         calculateBtn.addEventListener('click', () => {
-            let totalContractsForRange = 0;
+            let totalContractsForRange = 0; // Para el nivel de ventas y el bono
             const contractsPerPlan = {};
-            const detailedReportData = [];
             
             // Obtener el número de contratos por plan.
             planTypes.forEach(plan => {
-                const inputId = plan.replace(/\s|\+/g, '');
+                const inputId = planNames[plan].replace(/\s|\+/g, '');
                 const value = parseInt(document.getElementById(inputId).value, 10) || 0;
-                contractsPerPlan[plan] = value;
-            });
-
-            // Calcular el total de contratos para determinar el rango, excluyendo 'Empaquetado'.
-            planTypes.forEach(plan => {
-                if (plan !== 'Empaquetado') {
-                    totalContractsForRange += contractsPerPlan[plan];
+                contractsPerPlan[planNames[plan]] = value;
+                
+                // Sumar al total para el nivel de ventas y el bono, excluyendo 'Empaquetado'
+                if (planNames[plan] !== 'Empaquetado') {
+                    totalContractsForRange += value;
                 }
             });
 
-            // Determinar el rango de ventas basado en el nuevo total
+            // Determinar el rango de ventas basado en el total de contratos para el rango.
             let salesRange = '';
-            if (totalContractsForRange === 0 && (contractsPerPlan['Empaquetado'] || 0) === 0) {
-                 resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
-                 resultMessage.classList.remove('text-green-600', 'text-red-600');
-                 resultMessage.classList.add('text-gray-700');
-                 detailedReport.classList.add('hidden');
-                 creatorCredit.classList.add('hidden');
-                 generatePdfBtn.classList.add('hidden');
-                 return;
+            if (totalContractsForRange === 0) {
+                 if (contractsPerPlan['Empaquetado'] > 0) { // Si solo hay contratos de Empaquetado, aplican el nivel básico
+                    salesRange = '<=20'; 
+                } else {
+                    resultMessage.textContent = 'Por favor, ingresa al menos un contrato para calcular la comisión.';
+                    resultMessage.classList.remove('text-green-600', 'text-red-600');
+                    resultMessage.classList.add('text-gray-700');
+                    detailedReport.classList.add('hidden');
+                    creatorCredit.classList.add('hidden');
+                    generatePdfBtn.classList.add('hidden');
+                    return;
+                }
             } else if (totalContractsForRange <= 20) {
                 salesRange = '<=20';
             } else if (totalContractsForRange >= 21 && totalContractsForRange <= 40) {
@@ -208,22 +360,16 @@
 
             // Calcular la comisión total y el detalle por plan
             let totalCommission = 0;
-            reportTableBody.innerHTML = ''; // Limpiar la tabla antes de rellenarla
+            reportTableBody.innerHTML = '';
             
-            for (const plan in contractsPerPlan) {
-                const numContracts = contractsPerPlan[plan];
+            for (const plan of Object.keys(planNames)) {
+                const originalPlanName = planNames[plan];
+                const numContracts = contractsPerPlan[originalPlanName];
+
                 if (numContracts > 0) {
-                    const commissionPerContract = comisiones[salesRange][plan];
+                    const commissionPerContract = comisiones[salesRange][originalPlanName];
                     const totalValue = numContracts * commissionPerContract;
                     totalCommission += totalValue;
-
-                    // Agregar datos para el reporte detallado
-                    detailedReportData.push({
-                        plan: plan,
-                        contracts: numContracts,
-                        unitValue: commissionPerContract,
-                        totalValue: totalValue
-                    });
 
                     // Agregar fila a la tabla de detalle
                     const row = document.createElement('tr');
@@ -238,12 +384,40 @@
                 }
             }
             
-            // Actualizar la celda del total
+            // Lógica para agregar bonos adicionales
+            let bonus = 0;
+            let bonusMessage = '';
+            // El bono se basa en el total de contratos, excluyendo los de "Empaquetado"
+            if (totalContractsForRange >= 40) {
+                bonus = 200000;
+                bonusMessage = '¡Bono por alcanzar más de 40 contratos!';
+            } else if (totalContractsForRange >= 35) {
+                bonus = 150000;
+                bonusMessage = '¡Bono por alcanzar más de 35 contratos!';
+            } else if (totalContractsForRange >= 30) {
+                bonus = 100000;
+                bonusMessage = '¡Bono por alcanzar más de 30 contratos!';
+            }
+
+            // Agregar el bono a la comisión total
+            totalCommission += bonus;
+
+            // Actualizar la celda del total y añadir el bono al reporte si existe
             totalValueCell.textContent = formatCurrency(totalCommission);
+            
+            if (bonus > 0) {
+                 const bonusRow = document.createElement('tr');
+                bonusRow.className = 'bg-yellow-50 font-bold';
+                bonusRow.innerHTML = `
+                    <td class="px-4 py-2 text-right text-gray-900" colspan="3">BONO ADICIONAL (${bonusMessage})</td>
+                    <td class="px-4 py-2 text-center text-gray-900">${formatCurrency(bonus)}</td>
+                `;
+                reportTableBody.appendChild(bonusRow);
+            }
 
             // Mostrar el resultado y el detalle
             if (totalCommission > 0) {
-                resultMessage.textContent = `La comisión total para ${totalContractsForRange} contratos es de ${formatCurrency(totalCommission)}.`;
+                resultMessage.textContent = `Liquidación total para ${totalContractsForRange} contratos es de ${formatCurrency(totalCommission)}.`;
                 salesLevelMessage.textContent = `Tu nivel de ventas es: ${salesRange}`;
                 resultMessage.classList.remove('text-gray-700', 'text-red-600');
                 resultMessage.classList.add('text-green-600');
@@ -300,7 +474,7 @@
         resetBtn.addEventListener('click', () => {
             // Restablecer todos los campos a 0
             planTypes.forEach(plan => {
-                const inputId = plan.replace(/\s|\+/g, '');
+                const inputId = planNames[plan].replace(/\s|\+/g, '');
                 document.getElementById(inputId).value = 0;
             });
             
