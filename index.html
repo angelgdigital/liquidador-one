@@ -122,99 +122,75 @@ const comisiones = {
     // ... (Tu objeto comisiones se mantiene igual) ...
     '<=20': {
         'Empaquetado': 15000, 
-        'TV': 12500,
-        '200MB': 21500, 
-        '200MB+TV': 26500, 
-        '300MB': 26500, 
-        '300MB+TV': 31500,
-        '400MB': 36500, 
-        '400MB+TV': 41500, 
-        '500MB': 46500, 
-        '500MB+TV': 51500,
-        '700MB': 56500, 
-        '700MB+TV': 61500, 
-        '900MB': 66500, 
-        '900MB+TV': 71500
+        'TV': 21500,
+        '500Mb': 26500, 
+        '500Mb+TV': 31500, 
+        '600Mb': 36500, 
+        '600Mb+TV': 41500,
+        '700Mb': 46500, 
+        '700Mb+TV': 51500, 
+        '900Mb': 56500, 
+        '900Mb+TV': 61500
     },
     '21-40': {
         'Empaquetado': 15000, 
-        'TV': 27500,
-        '200MB': 36500, 
-        '200MB+TV': 41500, 
-        '300MB': 41500, 
-        '300MB+TV': 46500,
-        '400MB': 51500, 
-        '400MB+TV': 56500, 
-        '500MB': 61500, 
-        '500MB+TV': 66500,
-        '700MB': 71500, 
-        '700MB+TV': 76500, 
-        '900MB': 81500, 
-        '900MB+TV': 86500
+        'TV': 23500,
+        '500Mb': 28500, 
+        '500Mb+TV': 33500, 
+        '600Mb': 38500, 
+        '600Mb+TV': 43500,
+        '700Mb': 48500, 
+        '700Mb+TV': 53500, 
+        '900Mb': 58500, 
+        '900Mb+TV': 63500
     },
     '41-60': {
         'Empaquetado': 15000, 
-        'TV': 28500,
-        '200MB': 37500, 
-        '200MB+TV': 42500, 
-        '300MB': 42500, 
-        '300MB+TV': 47500,
-        '400MB': 52500, 
-        '400MB+TV': 57500, 
-        '500MB': 62500, 
-        '500MB+TV': 67500,
-        '700MB': 72500, 
-        '700MB+TV': 77500, 
-        '900MB': 82500, 
-        '900MB+TV': 87500
+        'TV': 25500,
+        '500Mb': 30500, 
+        '500Mb+TV': 35500, 
+        '600Mb': 40500, 
+        '600Mb+TV': 45500,
+        '700Mb': 50500, 
+        '700Mb+TV': 55500, 
+        '900Mb': 60500, 
+        '900Mb+TV': 65500
     },
     '61-80': {
         'Empaquetado': 15000, 
-        'TV': 29500,
-        '200MB': 38500, 
-        '200MB+TV': 43500, 
-        '300MB': 43500, 
-        '300MB+TV': 48500,
-        '400MB': 53500, 
-        '400MB+TV': 58500, 
-        '500MB': 63500, 
-        '500MB+TV': 68500,
-        '700MB': 73500, 
-        '700MB+TV': 78500, 
-        '900MB': 83500, 
-        '900MB+TV': 88500
+        'TV': 27500,
+        '500Mb': 32500, 
+        '500Mb+TV': 37500, 
+        '600Mb': 42500, 
+        '600Mb+TV': 47500,
+        '700Mb': 52500, 
+        '700Mb+TV': 57500, 
+        '900Mb': 62500, 
+        '900Mb+TV': 67500
     },
     '81-100': {
         'Empaquetado': 15000, 
-        'TV': 30500,
-        '200MB': 39500, 
-        '200MB+TV': 44500, 
-        '300MB': 44500, 
-        '300MB+TV': 49500,
-        '400MB': 54500, 
-        '400MB+TV': 59500, 
-        '500MB': 64500, 
-        '500MB+TV': 69500,
-        '700MB': 74500, 
-        '700MB+TV': 79500, 
-        '900MB': 84500, 
-        '900MB+TV': 89500
+        'TV': 29500,
+        '500Mb': 34500, 
+        '500Mb+TV': 39500, 
+        '600Mb': 44500, 
+        '600Mb+TV': 49500,
+        '700Mb': 54500, 
+        '700Mb+TV': 59500, 
+        '900Mb': 64500, 
+        '900Mb+TV': 69500
     },
     '>101': {
         'Empaquetado': 15000, 
         'TV': 31500,
-        '200MB': 40500, 
-        '200MB+TV': 45500, 
-        '300MB': 45500, 
-        '300MB+TV': 50500,
-        '400MB': 55500, 
-        '400MB+TV': 60500, 
-        '500MB': 65500, 
-        '500MB+TV': 70500,
-        '700MB': 75500, 
-        '700MB+TV': 80500, 
-        '900MB': 85500, 
-        '900MB+TV': 90500
+        '500Mb': 36500, 
+        '500Mb+TV': 41500, 
+        '600Mb': 46500, 
+        '600Mb+TV': 51500,
+        '700Mb': 56500, 
+        '700Mb+TV': 61500, 
+        '900Mb': 66500, 
+        '900Mb+TV': 71500
     }
 };
 
@@ -222,18 +198,14 @@ const comisiones = {
 const planNames = {
     'Empaquetado': 'Empaquetado',
     'TV': 'TV',
-    'HOGAR 200mb': '200MB',
-    'PLAN HOGAR 200mb+tv': '200MB+TV',
-    'FAMILIAR 300mb': '300MB',
-    'PLAN FAMILIAR 300mb+tv': '300MB+TV',
-    'AVANZADO 400mb': '400MB',
-    'PLAN AVANZADO 400mb+tv': '400MB+TV',
-    'ÉLITE 500mb': '500MB',
-    'PLAN ÉLITE 500mb+tv': '500MB+TV',
-    'ULTRA 700mb': '700MB',
-    'PLAN ULTRA 700mb+tv': '700MB+TV',
-    'PREMIUM 900mb': '900MB',
-    'PLAN PREMIUM 900mb+tv': '900MB+TV',
+    'HOGAR ONE': '500Mb',
+    'PLAN HOGAR ONE': '500Mb+TV',
+    'FAMILIAR ONE 600mb': '600Mb',
+    'PLAN FAMILIAR ONE': '300Mb+TV',
+    'ULTRA ONE': '700Mb',
+    'PLAN ULTRA ONE': '700Mb+TV',
+    'PREMIUM ONE': '900Mb',
+    'PLAN PREMIUM ONE': '900Mb+TV',
 };
 
         const planTypes = Object.keys(planNames);
@@ -387,16 +359,17 @@ const planNames = {
             let bonus = 0;
             let bonusMessage = '';
             // El bono se basa en el total de contratos, excluyendo los de "Empaquetado"
-            if (totalContractsForRange >= 40) {
-                bonus = 200000;
+            if (totalContractsForRange >= 45) {
+                bonus = 280000;
+                bonusMessage = '¡Bono por alcanzar más de 45 contratos!';
+            } else if (totalContractsForRange >= 40) {
+                bonus = 220000;
                 bonusMessage = '¡Bono por alcanzar más de 40 contratos!';
             } else if (totalContractsForRange >= 35) {
-                bonus = 150000;
+                bonus = 170000;
                 bonusMessage = '¡Bono por alcanzar más de 35 contratos!';
-            } else if (totalContractsForRange >= 30) {
-                bonus = 100000;
-                bonusMessage = '¡Bono por alcanzar más de 30 contratos!';
             }
+                      
 
             // Agregar el bono a la comisión total
             totalCommission += bonus;
